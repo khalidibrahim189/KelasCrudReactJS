@@ -109,7 +109,7 @@ class App extends Component {
         )
         this.setState({
           newDataSantri : searchedSantri
-        })
+        }, () => this.setPagination())
       }
     })
   }
@@ -118,16 +118,22 @@ class App extends Component {
     const {
       dataSantri,
        currentPage,
-      dataSantriPerPage
+      dataSantriPerPage,
+      newDataSantri,
+      value
     } = this.state
     
     const lastIndexOfSantri = currentPage * dataSantriPerPage;
     const firstIndexOfSantri = lastIndexOfSantri - dataSantriPerPage;
 
-    const dataSantriWithLimit = dataSantri.slice(firstIndexOfSantri, lastIndexOfSantri)
+    const dataSantriWithLimit = value &&  newDataSantri.length
+                                ? newDataSantri.slice(firstIndexOfSantri, lastIndexOfSantri)
+                                : dataSantri.slice(firstIndexOfSantri, lastIndexOfSantri)
 
     const paginationNumbers = [];
-    const currentDataSantriLength = dataSantri.length
+    const currentDataSantriLength = value && newDataSantri.length
+                                    ? newDataSantri.length
+                                    : dataSantri.length
 
     for (let i = 1; i <= Math.ceil(currentDataSantriLength / dataSantriPerPage); i++ ){
       paginationNumbers.push(i);
@@ -155,10 +161,25 @@ class App extends Component {
       () => this.setPagination()
     )
   }
+  onPreviousPage = () => {
+    this.setState(prevState => ({
+      currentPage: prevState.currentPage > 1
+                    ? prevState.currentPage - 1
+                    : prevState.currentPage
+    }), () => this.setPagination())
+  }
+
+  onNextPage = () => {
+    this.setState(prevState => ({
+      currentPage: prevState.currentPage < this.state.paginationNumbers.length
+                    ? prevState.currentPage + 1
+                    : prevState.currentPage
+    }), () => this.setPagination())
+  }
 
   render() {
     
-    const { onHandleInput, simpanDataSantri, onHandleDelete, onHandleUpdate, dataUpdate, searchedSantri } = this
+    const { onHandleInput, simpanDataSantri, onHandleDelete, onHandleUpdate, dataUpdate, searchedSantri, onPreviousPage } = this
     const { postDataSantri, 
             value, 
             dataSantriWithLimit, 
@@ -191,9 +212,13 @@ class App extends Component {
         <nav aria-label="Page navigation example">
           <ul className="pagination">
             <li className="page-item">
-              <a className="page-link" href="!#" aria-label="Previous">
+              <a className="page-link" 
+              href="!#" 
+              aria-label="Previous"
+              onClick = {() => onPreviousPage ()}
+              >
                 <span aria-hidden="true">&laquo;</span>
-                <span className="sr-only">Kembali</span>
+                <span className="sr-only">Previous</span>
               </a>
             </li>
 
@@ -211,7 +236,11 @@ class App extends Component {
             ))}
 
             <li className="page-item">
-              <a className="page-link" href="!#" aria-label="Next">
+              <a className="page-link"
+              href="!#" 
+              aria-label="Next"
+              onClick = {() => this.onNextPage ()}
+              >
                 <span aria-hidden="true">&raquo;</span>
                 <span className="sr-only">Next</span>
               </a>
