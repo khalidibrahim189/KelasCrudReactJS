@@ -15,7 +15,12 @@ class App extends Component {
           name: '',
           username : ''
         },
-        isUpdate : false
+        isUpdate : false,
+
+        currentPage : 1,
+        dataSantriPerPage : 5,
+        dataSantriWithLimit : [],
+        paginationNumbers  : []
     }
   }
 
@@ -29,7 +34,7 @@ class App extends Component {
         this.setState({
           dataSantri : result.data,
         }, () => {
-          console.log('this.state.datasantri : ', this.state.dataSantri)
+          this.setPagination()
         })
     })
   }
@@ -109,10 +114,58 @@ class App extends Component {
     })
   }
 
+  setPagination = () => {
+    const {
+      dataSantri,
+       currentPage,
+      dataSantriPerPage
+    } = this.state
+    
+    const lastIndexOfSantri = currentPage * dataSantriPerPage;
+    const firstIndexOfSantri = lastIndexOfSantri - dataSantriPerPage;
+
+    const dataSantriWithLimit = dataSantri.slice(firstIndexOfSantri, lastIndexOfSantri)
+
+    const paginationNumbers = [];
+    const currentDataSantriLength = dataSantri.length
+
+    for (let i = 1; i <= Math.ceil(currentDataSantriLength / dataSantriPerPage); i++ ){
+      paginationNumbers.push(i);
+    }
+
+    this.setState({
+      dataSantriWithLimit,
+      paginationNumbers
+    },
+    () => {
+      console.log('dari setPagiantion')
+      console.log('dataSantriLimit')
+      console.log(this.state.dataSantriWithLimit)
+      console.log('paginationNumbers')
+      console.log(this.state.paginationNumbers)
+    })
+  }
+
+
+  onMovePage = (event) => {
+    this.setState(
+      {
+        currentPage: Number(event.target.id)
+      },
+      () => this.setPagination()
+    )
+  }
+
   render() {
     
     const { onHandleInput, simpanDataSantri, onHandleDelete, onHandleUpdate, dataUpdate, searchedSantri } = this
-    const { dataSantri,newDataSantri, postDataSantri } = this.state
+    const { postDataSantri, 
+            value, 
+            dataSantriWithLimit, 
+            paginationNumbers,
+            currentPage
+            
+    } = this.state
 
     return (
       <div className="container-fluid bg-info text-light">
@@ -129,12 +182,42 @@ class App extends Component {
           simpanDataSantri  = {simpanDataSantri}
           onHandleDelete    = {onHandleDelete}
           dataUpdate        = {dataUpdate}
-          dataSantri        = {dataSantri}
-          newDataSantri     = {newDataSantri}
+          dataSantri        = {dataSantriWithLimit}
+          newDataSantri     = {dataSantriWithLimit}
           postDataSantri    = {postDataSantri}
           searchedSantri    = {searchedSantri}
           value             = {this.state.value}
         />
+        <nav aria-label="Page navigation example">
+          <ul className="pagination">
+            <li className="page-item">
+              <a className="page-link" href="!#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+                <span className="sr-only">Kembali</span>
+              </a>
+            </li>
+
+            {paginationNumbers.map((item, index) => (
+                <li  key={index} className ={`page-item ${currentPage ===  item && 'active'}`}
+                >
+                  <a className="page-link"
+                  href="!#"
+                  id={item}
+                  onClick={(event) => this.onMovePage(event)}
+                  >
+                    {item} 
+                  </a>
+                </li>
+            ))}
+
+            <li className="page-item">
+              <a className="page-link" href="!#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span className="sr-only">Next</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </div>
     )
   }
