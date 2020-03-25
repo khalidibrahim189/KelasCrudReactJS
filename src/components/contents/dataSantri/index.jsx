@@ -25,8 +25,9 @@ const DataSantri = (props) => {
                <td>{item.username}</td>
                <td className='row justify-content-center'>
                   <button 
-                     className   = "btn btn-sm btn-default btn-danger"
-                     onClick     = {()=>props.onHandleDelete(item.id)}
+                     className   = "btn btn-sm btn-default btn-danger mr-1"
+                     data-toggle = "modal"
+                     data-target = "#dataDelete"
                   >
                      Delete
                   </button>
@@ -80,6 +81,39 @@ const DataSantri = (props) => {
                </div>
             </div>
          </div>
+
+         <div className="modal fade" id="dataDelete" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal-dialog" role="document">
+               <div className="modal-content">
+                  <div className="modal-header">
+                     <h5 className="modal-title text-dark" id="exampleModal">
+                        Yakin ingin menghapus data santri?
+                     </h5>
+                  </div>
+                  <div className="modal-footer">
+                     
+                     <button 
+                        type        = "button" 
+                        className   = "btn btn-danger text-light"
+                        data-dismiss = "modal"
+                     >
+                        Tidak
+                     </button>
+
+                   
+                     <button 
+                        type         = "button" 
+                        className    = "btn btn-success text-light"
+                        data-dismiss = "modal"
+                        onClick      = { () => props.onHandleDelete(item.id)}
+                     >
+                        Yakin
+                     </button>
+                  </div>
+               </div>
+            </div>
+         </div>
+
                </td>
             </tr>
          )) 

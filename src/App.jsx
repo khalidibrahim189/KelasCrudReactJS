@@ -78,8 +78,7 @@ class App extends Component {
   }
   onHandleDelete = (id) => {
     axios.delete(`http://localhost:4000/posts/${id}`)
-    .then(res => {
-      alert('yakin mau dihapus ???', res);
+    .then(() => {
       this.getDataSantri()
     })
   }
@@ -125,14 +124,19 @@ class App extends Component {
     
     const lastIndexOfSantri = currentPage * dataSantriPerPage;
     const firstIndexOfSantri = lastIndexOfSantri - dataSantriPerPage;
+    const emptyDataSantri = []
 
     const dataSantriWithLimit = value &&  newDataSantri.length
                                 ? newDataSantri.slice(firstIndexOfSantri, lastIndexOfSantri)
+                                : value && !newDataSantri.length
+                                ? emptyDataSantri
                                 : dataSantri.slice(firstIndexOfSantri, lastIndexOfSantri)
 
     const paginationNumbers = [];
     const currentDataSantriLength = value && newDataSantri.length
                                     ? newDataSantri.length
+                                    : value && !newDataSantri.length
+                                    ? emptyDataSantri.length
                                     : dataSantri.length
 
     for (let i = 1; i <= Math.ceil(currentDataSantriLength / dataSantriPerPage); i++ ){
